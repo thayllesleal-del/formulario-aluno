@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Como foi a aula?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: amigável, de sala de aula, rápido de responder no celular
+   IDEA: um "bilhete de saída" (exit ticket) destacado do caderno
+   PICTURE: o próprio formulário, com cinco carinhas grandes
+   COLOUR/TYPE: azul-cobalto + amarelo marca-texto; Baloo 2 + Nunito
+   LAYOUT: uma coluna calma, passos numerados por blocos */
+:root{color-scheme:light dark;
+  --bg:light-dark(#e8eeff,#10142e);--paper:light-dark(#fff,#1a1f42);--ink:light-dark(#14183a,#eef1ff);
+  --mute:light-dark(#5a6088,#a7aed6);--line:light-dark(#d5dcf5,#30366a);--blue:#3b5bdb;--blue2:light-dark(#2f4ac0,#7d95ff);
+  --hi:#ffd43b;--err:light-dark(#c92a2a,#ff8787)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Nunito,system-ui,sans-serif}
+header{background:var(--blue);color:#fff;padding:28px max(5vw,16px) 64px}
+header .in,main{max-width:620px;margin:0 auto}
+h1{font:800 clamp(32px,7vw,46px)/1.05 "Baloo 2",system-ui,sans-serif;margin:0 0 6px;text-wrap:balance}
+h1 mark{background:var(--hi);color:#14183a;padding:0 .15em;border-radius:6px}
+header p{margin:0;opacity:.9}
+main{padding:0 max(4vw,12px) 48px;margin-top:-44px}
+.ticket{background:var(--paper);border-radius:18px;padding:clamp(18px,4vw,32px);box-shadow:0 10px 30px rgba(20,24,58,.15);position:relative}
+.ticket::before{content:"";position:absolute;left:18px;right:18px;top:-1px;height:10px;
+  background:radial-gradient(circle at 8px 0,var(--bg) 6px,transparent 6.5px) 0 0/20px 10px repeat-x}
+fieldset{border:0;margin:0 0 26px;padding:0}
+legend,.lbl{font:600 20px/1.2 "Baloo 2",system-ui,sans-serif;margin-bottom:10px;padding:0;display:block}
+.req{font:700 12px Nunito,sans-serif;color:var(--blue2);background:light-dark(#e8eeff,#262c5c);border-radius:99px;padding:2px 8px;margin-left:6px;vertical-align:middle;white-space:nowrap}
+.opt{font:600 13px Nunito,sans-serif;color:var(--mute);margin-left:6px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip input{position:absolute;opacity:0;pointer-events:none}
+.chip span{display:inline-flex;align-items:center;min-height:44px;padding:8px 16px;border:2px solid var(--line);border-radius:12px;font-weight:700;cursor:pointer;background:var(--paper)}
+.chip input:checked+span{background:var(--blue);border-color:var(--blue);color:#fff}
+.chip input:focus-visible+span,.face input:focus-visible+span{outline:3px solid var(--hi);outline-offset:2px}
+.hint{color:var(--mute);font-size:14px;margin:0}
+.faces{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.face input{position:absolute;opacity:0;pointer-events:none}
+.face span{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 2px;border-radius:14px;border:2px solid transparent;cursor:pointer;font-size:13px;font-weight:700;color:var(--mute);text-align:center;line-height:1.15}
+.face svg{width:min(56px,100%);height:auto;transition:transform .15s}
+.face span:hover svg{transform:scale(1.08)}
+.face input:checked+span{border-color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);color:var(--ink)}
+.face input:checked+span .fc{fill:var(--c)}
+.fc{fill:light-dark(#eef1fb,#262c5c);stroke:var(--ink);stroke-width:2.2}
+.fe{fill:var(--ink)}.fm{fill:none;stroke:var(--ink);stroke-width:2.6;stroke-linecap:round}
+textarea,input[type=text]{width:100%;font:16px/1.5 Nunito,sans-serif;color:var(--ink);background:light-dark(#f7f9ff,#141838);border:2px solid var(--line);border-radius:12px;padding:12px 14px}
+textarea{min-height:110px;resize:vertical}
+textarea:focus,input[type=text]:focus{outline:none;border-color:var(--blue)}
+.toggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.toggle .chip span{width:100%;justify-content:center}
+#nomeBox[hidden]{display:none}
+button{font:800 20px "Baloo 2",system-ui,sans-serif;min-height:52px;width:100%;border:0;border-radius:14px;background:var(--hi);color:#14183a;cursor:pointer;box-shadow:0 4px 0 #e0b400}
+button:active{transform:translateY(2px);box-shadow:0 2px 0 #e0b400}
+button:disabled{opacity:.6;cursor:wait}
+button:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+.msg{min-height:24px;margin:12px 0 0;font-weight:700;color:var(--err)}
+.demo{background:var(--hi);color:#14183a;border-radius:10px;padding:8px 12px;font-size:14px;margin-bottom:16px}
+.ok{text-align:center;padding:24px 8px}
+.ok svg{width:120px;height:auto}
+.ok h2{font:800 34px/1.1 "Baloo 2",sans-serif;margin:12px 0 6px}
+.ok p{color:var(--mute);margin:0 0 22px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header><div class="in">
+  <h1>Como foi a aula <mark>hoje?</mark></h1>
+  <p id="hoje">Leva menos de um minuto. Você pode responder sem se identificar.</p>
+</div></header>
+
+<main>
+  <div class="ticket">
+    <form id="f" novalidate>
+      <p class="demo" id="demo" hidden>Modo de teste: este arquivo está aberto fora do Google Apps Script, então a resposta não é salva.</p>
+
+      <fieldset>
+        <legend>Seu colégio <span class="req">obrigatório</span></legend>
+        <div class="chips" id="colegios"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Sua turma <span class="req">obrigatório</span></legend>
+        <div class="chips" id="turmas"><p class="hint">Escolha o colégio primeiro.</p></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Como você avalia a aula?</legend>
+        <div class="faces" id="faces"></div>
+      </fieldset>
+
+      <div style="margin-bottom:26px">
+        <label class="lbl" for="comentario">Conta pra mim: o que você achou?</label>
+        <textarea id="comentario" maxlength="1500" placeholder="O que foi legal, o que foi difícil, o que poderia ser diferente…"></textarea>
+      </div>
+
+      <div style="margin-bottom:26px">
+        <label class="lbl" for="duvida">Ficou alguma dúvida? <span class="opt">opcional</span></label>
+        <textarea id="duvida" maxlength="800" style="min-height:80px" placeholder="Escreva aqui o que você não entendeu."></textarea>
+      </div>
+
+      <fieldset>
+        <legend>Quem está respondendo?</legend>
+        <div class="toggle">
+          <label class="chip"><input type="radio" name="ident" value="anonimo" checked><span>Anônimo</span></label>
+          <label class="chip"><input type="radio" name="ident" value="nome"><span>Com meu nome</span></label>
+        </div>
+        <div id="nomeBox" hidden>
+          <label class="lbl" for="nome" style="font-size:17px">Seu nome <span class="req">obrigatório</span></label>
+          <input type="text" id="nome" maxlength="80" autocomplete="name">
+        </div>
+      </fieldset>
+
+      <button type="submit" id="enviar">Enviar</button>
+      <p class="msg" id="msg" role="alert"></p>
+    </form>
+
+    <div class="ok" id="ok" hidden>
+      <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="28" fill="#ffd43b" stroke="#14183a" stroke-width="2.5"/><circle cx="23" cy="27" r="3" fill="#14183a"/><circle cx="41" cy="27" r="3" fill="#14183a"/><path d="M20 38 Q32 50 44 38" fill="none" stroke="#14183a" stroke-width="3" stroke-linecap="round"/></svg>
+      <h2>Valeu!</h2>
+      <p>Sua resposta chegou para o professor.</p>
+      <button type="button" id="outra">Responder de novo</button>
+    </div>
+  </div>
+</main>
+
+<script type="application/json" id="cfg"><?!= colegiosJson ?></script>
+<script>
+{
+  let COLEGIOS;
+  try { COLEGIOS = JSON.parse(document.getElementById('cfg').textContent); }
+  catch (e) { COLEGIOS = {'EMEF Álvaro Ferrugem':['6º ano','7º ano','8º ano','9º ano'],'Colégio João XXIII':['9º ano']}; }
+  const NIVEIS = [
+    {v:1, t:'Muito ruim', c:'#fa5252', b:-1},
+    {v:2, t:'Ruim', c:'#fd7e14', b:-.5},
+    {v:3, t:'Mais ou menos', c:'#fab005', b:0},
+    {v:4, t:'Boa', c:'#40c057', b:.6},
+    {v:5, t:'Muito boa', c:'#3b5bdb', b:1}
+  ];
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const online = typeof google !== 'undefined' && google.script && google.script.run;
+  const guarda = {
+    get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } },
+    set(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  };
+
+  if (!online) $('demo').hidden = false;
+
+  const d = new Date();
+  $('hoje').textContent = d.toLocaleDateString('pt-BR', {weekday:'long', day:'numeric', month:'long'}).replace(/^./, c => c.toUpperCase()) + ' · leva menos de um minuto.';
+
+  $('colegios').innerHTML = Object.keys(COLEGIOS).map((c, i) =>
+    `<label class="chip"><input type="radio" name="colegio" id="col${i}" value="${esc(c)}"><span>${esc(c)}</span></label>`).join('');
+
+  function mostraTurmas(colegio, marcada) {
+    const lista = COLEGIOS[colegio] || [];
+    $('turmas').innerHTML = lista.map((t, i) =>
+      `<label class="chip"><input type="radio" name="turma" id="tur${i}" value="${esc(t)}"${t === marcada || lista.length === 1 ? ' checked' : ''}><span>${esc(t)}</span></label>`).join('');
+  }
+
+  $('faces').innerHTML = NIVEIS.map(n => {
+    const y = 40 + n.b * 7;
+    return `<label class="face" style="--c:${n.c}"><input type="radio" name="nota" value="${n.v}"><span>
+      <svg viewBox="0 0 64 64" aria-hidden="true"><circle class="fc" cx="32" cy="32" r="28"/>
+      <circle class="fe" cx="23" cy="27" r="3"/><circle class="fe" cx="41" cy="27" r="3"/>
+      <path class="fm" d="M21 40 Q32 ${y} 43 40"/></svg>${n.t}</span></label>`;
+  }).join('');
+
+  document.addEventListener('change', e => {
+    if (e.target.name === 'colegio') { mostraTurmas(e.target.value); guarda.set('colegio', e.target.value); }
+    if (e.target.name === 'turma') guarda.set('turma', e.target.value);
+    if (e.target.name === 'ident') {
+      const comNome = e.target.value === 'nome';
+      $('nomeBox').hidden = !comNome;
+      if (comNome) $('nome').focus();
+    }
+    $('msg').textContent = '';
+  });
+
+  // Lembra o colégio e a turma da última resposta neste aparelho
+  const colSalvo = guarda.get('colegio');
+  if (colSalvo && COLEGIOS[colSalvo]) {
+    const inp = [...document.querySelectorAll('input[name=colegio]')].find(i => i.value === colSalvo);
+    if (inp) { inp.checked = true; mostraTurmas(colSalvo, guarda.get('turma')); }
+  }
+
+  const val = n => (document.querySelector(`input[name=${n}]:checked`) || {}).value || '';
+
+  $('f').addEventListener('submit', e => {
+    e.preventDefault();
+    const anonimo = val('ident') !== 'nome';
+    const dados = {
+      colegio: val('colegio'), turma: val('turma'), nota: Number(val('nota')) || 0,
+      comentario: $('comentario').value.trim(), duvida: $('duvida').value.trim(),
+      anonimo, nome: anonimo ? '' : $('nome').value.trim()
+    };
+    let erro = '';
+    if (!dados.colegio) erro = 'Escolha o seu colégio.';
+    else if (!dados.turma) erro = 'Escolha a sua turma.';
+    else if (!dados.nota && !dados.comentario) erro = 'Escolha uma carinha ou escreva o que achou da aula.';
+    else if (!anonimo && !dados.nome) erro = 'Escreva seu nome ou marque "Anônimo".';
+    if (erro) { $('msg').textContent = erro; return; }
+
+    $('enviar').disabled = true;
+    $('enviar').textContent = 'Enviando…';
+    const fim = () => { $('enviar').disabled = false; $('enviar').textContent = 'Enviar'; };
+    const sucesso = () => { fim(); $('f').hidden = true; $('ok').hidden = false; window.scrollTo(0, 0); };
+
+    if (!online) { setTimeout(sucesso, 400); return; }
+    google.script.run
+      .withSuccessHandler(sucesso)
+      .withFailureHandler(err => { fim(); $('msg').textContent = (err && err.message) || 'Não deu para enviar. Tente de novo.'; })
+      .salvar(dados);
+  });
+
+  $('outra').addEventListener('click', () => {
+    $('comentario').value = ''; $('duvida').value = '';
+    document.querySelectorAll('input[name=nota]').forEach(i => i.checked = false);
+    $('ok').hidden = true; $('f').hidden = false;
+  });
+}
+</script>
+</body>
+</html>
